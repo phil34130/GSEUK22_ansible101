@@ -1,0 +1,32 @@
+---
+- name: Issue mvs command
+  hosts: zxplore
+  gather_facts: false
+  environment: "{{ environment_vars }}"
+  connection: ibm.ibm_zos_core.zos_ssh
+
+  collections:
+    - ibm.ibm_zos_core
+  tasks:
+      - name: Detecting system name
+        #shell: "uname -a |awk '{print $2}'"
+        command: uname -n
+        register: result
+
+      - name: Setting fact `system_name`
+        set_fact:
+          system_name: "{{ result.stdout}}"
+      
+      - name: Fact `system_name` set with value
+        debug:
+          msg: "{{ system_name }}"
+          
+      - name: Checking active tasks for {{ system_name }}
+        zos_operator:
+          cmd: "D A,IZU*"
+          verbose: true
+        register: result_zos_operator
+      
+      - name: Fact `system_name` set with value
+        debug:
+          msg: "{{ result_zos_operator.content }}"        
