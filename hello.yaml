@@ -16,4 +16,4 @@
     - name: "Copy from content to dataset"
       ibm.ibm_zos_core.zos_copy:
         content: "Hello World"
-        dest: Z04683.ZEXPLORE.DS1
+        dest: Z04683.ANSIBLE.TEST1
