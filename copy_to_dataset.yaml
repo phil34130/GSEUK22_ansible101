@@ -1,0 +1,13 @@
+---
+- name: Creating a copy of parmlib member
+  hosts: zxplore
+  gather_facts: false
+  environment: "{{ environment_vars }}"
+  collections:
+    - ibm.ibm_zos_core
+
+  tasks:
+    - name: "Copy from content to dataset"
+      ibm.ibm_zos_core.zos_copy:
+        content: "Hello World"
+        dest: Z04683.ANSB.HELLO.GSE
