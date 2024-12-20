@@ -32,5 +32,3 @@
 
     - ansible.builtin.debug:
         var: submitted_jobs
-
-
