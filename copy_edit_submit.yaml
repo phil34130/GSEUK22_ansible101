@@ -22,12 +22,12 @@
 ###############################################################################
 
 ---
-- hosts: zos_host
-  collections:
-    - ibm.ibm_zos_core
-  gather_facts: no
+- name: Creating a job from template and submitting it
+  hosts: zxplore
+  gather_facts: false
   environment: "{{ environment_vars }}"
-
+  collections:
+      - ibm.ibm_zos_core
   tasks:
     # ##########################################################################
     # Generate a temporary data set name
@@ -93,8 +93,10 @@
     - name: "Submit the JCL {{ tmp_data_set }}(PSA)"
       zos_job_submit:
         src: "{{ tmp_data_set }}(PSA)"
-        location: DATA_SET
-        wait: true
+        location: data_set
+        wait_time_s: 30
+        return_output: true
+        max_rc: 0
       register: result_submit_psa
 
     - name: "Response for submitting JCL {{ tmp_data_set }}(PSA)"
@@ -104,8 +106,10 @@
     - name: "Submit the JCL {{ tmp_data_set }}(UPTIME)"
       zos_job_submit:
         src: "{{ tmp_data_set }}(UPTIME)"
-        location: DATA_SET
-        wait: true
+        location: data_set
+        wait_time_s: 30
+        return_output: true
+        max_rc: 0
       register: result_submit_uptime
 
     - name: "Response for submitting JCL {{ tmp_data_set }}(UPTIME)"
@@ -116,3 +120,4 @@
       zos_data_set:
         name: "{{ tmp_data_set }}"
         state: absent
+
