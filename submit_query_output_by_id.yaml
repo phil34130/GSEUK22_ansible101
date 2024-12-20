@@ -1,0 +1,52 @@
+###############################################################################
+# Â© Copyright IBM Corporation 2020
+# Usage:
+#  ansible-playbook -i <inventory> <playbook>
+#
+# Example:
+#  ansible-playbook -i inventory submit_query_output_by_id.yaml
+###############################################################################
+
+---
+- hosts: zxplore
+  collections:
+    - ibm.ibm_zos_core
+  gather_facts: no
+  environment: "{{ environment_vars }}"
+
+  tasks:
+    - name: Convert a local JCL file to IBM-037 and submit the job
+      zos_job_submit:
+        src: "{{playbook_dir}}/files/HELLO.jcl"
+        location: local
+        encoding:
+          from: ISO8859-1
+          to: IBM-037
+      register: job_sub_result
+
+    - name: Setting facts `sub_job_id` and `sub_job_name`
+      set_fact:
+        sub_job_id: "{{ job_sub_result.jobs[0].job_id }}"
+        sub_job_name: "{{ job_sub_result.jobs[0].job_name }}"
+
+    - name:
+      debug:
+        msg: The job {{sub_job_name}} has been assigned id {{sub_job_id}}
+
+    - name: Get job output job by {{sub_job_id}}
+      zos_job_output:
+        job_id: "{{sub_job_id}}"
+      register: job_output_result
+
+    - name: Result for job id {{sub_job_id}} job output
+      debug:
+        msg: "{{ job_output_result }}"
+
+    - name: Query the submitted job by {{sub_job_id}}
+      zos_job_query:
+        job_id: "{{sub_job_id}}"
+      register: job_query_result
+
+    - name: Result for job id {{sub_job_id}} job query
+      debug:
+        msg: "{{ job_query_result }}"
