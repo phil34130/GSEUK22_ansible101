@@ -1,0 +1,15 @@
+---
+- hosts: zxplore
+  collections:
+    - ibm.ibm_zos_core
+  gather_facts: false
+  environment: "{{ environment_vars }}"
+
+  tasks:
+    - name: "Copy local directory {{ playbook_dir }}/files to {{ ansible_user | upper }}.ANSB.JCL"
+      zos_copy:
+        src: "{{ playbook_dir }}/files"
+        dest: "{{ ansible_user | upper }}.ANSB.JCL"
+        encoding:
+          from: ISO8859-1
+          to: IBM-1047
