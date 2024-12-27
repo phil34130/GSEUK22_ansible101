@@ -1,0 +1,15 @@
+/* REXX */                                               
+/**************************************************/     
+/*                                               */      
+/* Invoke like                                   */      
+/*   exec 'Z04683.EXEC(RXSAY)' '10 1'     */             
+/*                                               */      
+/*************************************************/      
+parse arg loopCnt sleepTime                              
+do i = 1 to loopCnt                                      
+  say i "of" loopCnt                                     
+  CALL SYSCALLS('ON')    /*ENABLE USS-CALLS*/            
+  ADDRESS SYSCALL                                        
+  "SLEEP" sleepTime      /*SLEEP FOR ?? SECONDS*/        
+  CALL SYSCALLS 'OFF'                                    
+end                                                      
