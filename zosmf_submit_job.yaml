@@ -44,6 +44,42 @@
 
 
   tasks:
+    - name: Set String
+      set_fact:
+        string: |
+          //HELLO   JOB (T043JM,JM00,1,0,0,0),'HELLO WORLD - JRM',
+          //             MSGCLASS=X,MSGLEVEL=1,NOTIFY=&SYSUID
+          /*JOBPARM LINES=9999
+          //*
+          //* PRINT "HELLO WORLD" ON JOB OUTPUT
+          //*
+          //* NOTE THAT THE EXCLAMATION POINT IS INVALID EBCDIC FOR JCL
+          //*   AND WILL CAUSE A JCL ERROR
+          //*
+          //STEP0001 EXEC PGM=IEBGENER
+          //SYSIN    DD DUMMY
+          //SYSPRINT DD SYSOUT=*
+          //SYSUT1   DD *
+            HELLO, philippe
+          /*
+          //SYSUT2   DD SYSOUT=*
+          //
+      register: output
+
+    - name : Create a File
+      copy:
+        content: "{{string}}"
+#        dest: "HELLO.jcl"
+        dest: "{{ playbook_dir }}/HELLO.jcl"        
+      delegate_to: localhost
+    - name: Convert file encoding from controller file to USS
+      zos_copy:
+        src: "{{ playbook_dir }}/HELLO.jcl"   
+        dest: "{{ZOSMF_DEST_FOLDER}}/hello.jcl"
+        force: true
+        encoding:
+          from: ISO8859-1
+          to: IBM-1047
     - name: Create and submit a job
       uri:
         url: https://{{ ZOSMF_HOST }}:{{ ZOSMF_PORT }}/zosmf/restjobs/jobs/
@@ -51,11 +87,13 @@
         password: "{{ ZOSMF_PASS }}"
         method: PUT
         body_format: json
-        body:
-          file: "{{lookup('file', '{{ playbook_dir }}/files/HELLO.jcl') }}"  
+        body: 
+#          file: "{{lookup('file', 'HELLO.jcl') }}" 
+          file: "{{ZOSMF_DEST_FOLDER}}/hello.jcl" 
+#          file: "{{lookup('file', '{{playbook_dir}}/HELLO.jcl') }}"  
 #          file: //'Z04683.JCL(LISTDS)'
         headers:
-          Content-Type: text/plain
+          Content-Type: application/json
           X-CSRF-ZOSMF-HEADER: required_header
         force_basic_auth: true
         validate_certs: false
