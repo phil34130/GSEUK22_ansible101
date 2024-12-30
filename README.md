@@ -200,6 +200,7 @@ Installing 'ibm.ibm_zos_core:1.3.6' to '/Users/billpereira/.ansible/collections/
 ibm.ibm_zos_core:1.3.6 was installed successfully
 ```
 ➜ Install the z/OSMF Collection with `ansible-galaxy collection install ibm.ibm_zosmf`
+```
 ansible-galaxy collection install ibm.ibm_zosmf
 Starting galaxy collection install process
 Process install dependency map
