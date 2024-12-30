@@ -188,7 +188,7 @@ zxplore                    : ok=1    changed=0    unreachable=0    failed=0    s
 So let's explore the first z/OS module, adding our ibm_core_zos collections and playing with zos_copy:
 https://ibm.github.io/z_ansible_collections_doc/ibm_zos_core/docs/source/modules/zos_copy.html
 
-0- Install the zOS Collection with `ansible-galaxy collection install ibm.ibm_zos_core:*`
+0- Install the zOS  Collection with `ansible-galaxy collection install ibm.ibm_zos_core:*`
 
 ```
 ➜ ansible-galaxy collection install ibm.ibm_zos_core
@@ -199,13 +199,23 @@ Downloading https://galaxy.ansible.com/download/ibm-ibm_zos_core-1.3.6.tar.gz to
 Installing 'ibm.ibm_zos_core:1.3.6' to '/Users/billpereira/.ansible/collections/ansible_collections/ibm/ibm_zos_core'
 ibm.ibm_zos_core:1.3.6 was installed successfully
 ```
+➜ Install the z/OSMF Collection with `ansible-galaxy collection install ibm.ibm_zosmf`
+ansible-galaxy collection install ibm.ibm_zosmf
+Starting galaxy collection install process
+Process install dependency map
+Starting collection install process
+Downloading https://galaxy.ansible.com/api/v3/plugin/ansible/content/published/collections/artifacts/ibm-ibm_zosmf-1.5.0.tar.gz to /home/gitpod/.ansible/tmp/ansible-local-8396r0uri297/tmpmm95hfy_/ibm-ibm_zosmf-1.5.0-tfnhzfit
+Installing 'ibm.ibm_zosmf:1.5.0' to '/home/gitpod/.ansible/collections/ansible_collections/ibm/ibm_zosmf'
+ibm.ibm_zosmf:1.5.0 was installed successfully
+```
 
-1- Add the collection to the playbook and the zos environment vars.
+1- Add the collections to the playbook and the zos environment vars.
 
 ```
   environment: "{{ environment_vars }}"
   collections:
     - ibm.ibm_zos_core
+    - ibm.ibm_zosmf
 ```
 
 2- Add a task to copy content to a file in USS
@@ -513,3 +523,32 @@ So our template will be:
 ## Restarting activities on ZXplorer
 
 If you want to restart the hands on activities on the lpar use `restart.yaml` It will delete the jcls generated from template, datasets and files allocated on the lpar.
+
+
+Some of the sample playbooks you may try: 
+active_tasks.yaml
+convert_text.yaml
+copy_edit_submit.yaml
+copy_local_dir_to_pds.yaml
+copy_member.yaml
+copy_parmlib_member.yaml
+copy_to_dataset.yaml
+copy_to_uss.yaml
+create_dataset_and_listcat.yaml
+dataset_allocate.yaml
+hello.yaml
+hello1.yaml
+inventory.yaml
+iplinfo_device.yaml
+mvs_command.yaml
+run_rexx_and_clist.yaml
+smpe_list_sysmod.yaml
+submit_job.yaml
+submit_query_output_by_id.yaml
+submit_query_retrieve.yaml
+system_discover.yaml
+uri_sample.yaml
+vars_n_cond.yaml
+workflow_basic.yaml
+zosmf_dslist.yaml
+zosmf_submit_job.yaml
