@@ -527,6 +527,7 @@ If you want to restart the hands on activities on the lpar use `restart.yaml` It
 
 
 Some of the sample playbooks you may try: 
+
 	active_tasks.yaml
  
 	convert_text.yaml
