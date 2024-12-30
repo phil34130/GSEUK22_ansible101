@@ -527,29 +527,28 @@ If you want to restart the hands on activities on the lpar use `restart.yaml` It
 
 
 Some of the sample playbooks you may try: 
-active_tasks.yaml
-convert_text.yaml
-copy_edit_submit.yaml
-copy_local_dir_to_pds.yaml
-copy_member.yaml
-copy_parmlib_member.yaml
-copy_to_dataset.yaml
-copy_to_uss.yaml
-create_dataset_and_listcat.yaml
-dataset_allocate.yaml
-hello.yaml
-hello1.yaml
-inventory.yaml
-iplinfo_device.yaml
-mvs_command.yaml
-run_rexx_and_clist.yaml
-smpe_list_sysmod.yaml
-submit_job.yaml
-submit_query_output_by_id.yaml
-submit_query_retrieve.yaml
-system_discover.yaml
-uri_sample.yaml
-vars_n_cond.yaml
-workflow_basic.yaml
-zosmf_dslist.yaml
-zosmf_submit_job.yaml
+	active_tasks.yaml
+	convert_text.yaml
+	copy_edit_submit.yaml
+	copy_local_dir_to_pds.yaml
+	copy_member.yaml
+	copy_parmlib_member.yaml
+	copy_to_dataset.yaml
+	copy_to_uss.yaml
+	create_dataset_and_listcat.yaml
+	dataset_allocate.yaml
+	hello.yaml
+	inventory.yaml
+	iplinfo_device.yaml
+	mvs_command.yaml
+	run_rexx_and_clist.yaml
+	smpe_list_sysmod.yaml
+	submit_job.yaml
+	submit_query_output_by_id.yaml
+	submit_query_retrieve.yaml
+	system_discover.yaml
+	uri_sample.yaml
+	vars_n_cond.yaml
+	workflow_basic.yaml
+	zosmf_dslist.yaml
+	zosmf_submit_job.yaml
