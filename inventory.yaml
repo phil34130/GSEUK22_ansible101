@@ -1,8 +1,8 @@
 all:
   hosts:
     zxplore:
-      ansible_user: Z04683
-      ansible_password: daniele9
+      ansible_user: Znnnnn
+      ansible_password: ppppppp
       ansible_host: 204.90.115.200
       PYZ: "/usr/lpp/IBM/cyp/v3r9/pyz"
       ZOAU: "/usr/lpp/IBM/zoautil"
