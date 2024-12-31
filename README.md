@@ -526,7 +526,7 @@ So our template will be:
 If you want to restart the hands on activities on the lpar use `restart.yaml` It will delete the jcls generated from template, datasets and files allocated on the lpar.
 
 
-Some of the sample playbooks you may try: 
+## Some of the sample playbooks you may want to try: 
 
 	active_tasks.yaml
  
