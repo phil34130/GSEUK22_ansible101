@@ -39,11 +39,11 @@
     ZOSMF_PORT: 10443
 
     # Desired destination folder on target host for holding definition file
-    ZOSMF_DEST_FOLDER: /z/z04683
+    ZOSMF_DEST_FOLDER: /z/znnnnn
 
     # Credentials to access z/OSMF
-    ZOSMF_USER: Z04683
-    ZOSMF_PASS: daniele9
+    ZOSMF_USER: Znnnnn
+    ZOSMF_PASS: ppppppp
 
     # Nickname of the system on which the workflow is to be created.
     # Use the nickname that is specified for the system definition

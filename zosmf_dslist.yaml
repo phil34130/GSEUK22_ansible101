@@ -37,14 +37,14 @@
     ZOSMF_PORT: 10443
 
     # Desired destination folder on target host for holding definition file
-    ZOSMF_DEST_FOLDER: /z/z04683
+    ZOSMF_DEST_FOLDER: /z/znnnnn
 
     # Credentials to access z/OSMF
-    ZOSMF_USER: Z04683
-    ZOSMF_PASS: daniele9
+    ZOSMF_USER: Znnnnn
+    ZOSMF_PASS: ppppppp
 
     # HLQ to list all datasets
-    ZOSMF_HLQ: Z04683
+    ZOSMF_HLQ: Znnnnn
 
   tasks:
     - name: Query list of datasets
