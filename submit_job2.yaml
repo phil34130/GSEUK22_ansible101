@@ -1,0 +1,41 @@
+###############################################################################
+# Â© Copyright IBM Corporation 2020
+# Usage:
+#  ansible-playbook -i <inventory> <playbook>
+#
+# Example:
+#  ansible-playbook -i inventory submit_query_output_by_id.yaml
+###############################################################################
+
+---
+- hosts: zxplore
+  collections:
+    - ibm.ibm_zos_core
+  gather_facts: no
+  environment: "{{ environment_vars }}"
+
+  tasks:
+    - name: Convert a local JCL file to IBM-037 and submit the job
+      zos_job_submit:
+        src: "{{playbook_dir}}/job1.jcl"
+        location: local
+        wait_time_s: 30
+        encoding:
+          from: ISO8859-1
+          to: IBM-037
+      register: job_sub_result
+
+    - name: Check the status of JCL1 HELLO job
+      zos_job_query:
+        job_name: "JCL1*"
+#        owner: ADMIN
+
+    - name: Retrieve output of JCL1 job
+      zos_job_output:
+        job_name: "JCL1*"
+#        ddname: "JESMSGLG"
+#        ddname: "JESJCL"
+#        job_id: "STC*"
+#        job_name: "*"
+#        owner: "IBMUSER"
+        ddname: "?"
