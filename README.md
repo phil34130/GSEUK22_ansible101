@@ -549,6 +549,8 @@ If you want to restart the hands on activities on the lpar use `restart.yaml` It
 	dataset_allocate.yaml
  
 	hello.yaml
+
+ 	gather_facts.yaml
  
 	inventory.yaml
  
@@ -561,6 +563,8 @@ If you want to restart the hands on activities on the lpar use `restart.yaml` It
 	smpe_list_sysmod.yaml
  
 	submit_job.yaml
+
+ 	submit_job2.yaml
  
 	submit_query_output_by_id.yaml
  
