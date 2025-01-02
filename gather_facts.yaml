@@ -18,8 +18,9 @@
 # can use: ansible-playbook -i inventory.yaml gather_facts.yaml --private-key=$HOME/.ssh/id_rsa
 #  or (see further down)
 #  vars:
-#    ansible_ssh_private_key_file: "{{ playbook_dir }}/files/id_rsa"
-#      /home/gitpod/.ssh/id_rsa
+#    vars:
+#    HOME: "{{lookup('env', 'HOME')}}"
+#    ansible_ssh_private_key_file: "{{ HOME }}/.sshid_rsa"
 #    ansible_ssh_user: Z04683
 #
 #
@@ -30,9 +31,8 @@
 
   environment: "{{ environment_vars }}"
   vars:
-    ansible_ssh_private_key_file: "{{ playbook_dir }}/files/id_rsa"
+    ansible_ssh_private_key_file: "{{ HOME }}/.sshid_rsa"
     ansible_ssh_user: Z04683
-  gather_facts: false
   gather_facts: false
 
   tasks:
