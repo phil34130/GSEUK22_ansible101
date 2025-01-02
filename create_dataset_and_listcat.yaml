@@ -1,28 +1,55 @@
 ---
-- name: Create uss file and copy/encode from controler file
-  hosts: zxplore
-  gather_facts: false
-  environment: "{{ environment_vars }}"
+- hosts: zxplore
   collections:
     - ibm.ibm_zos_core
+  gather_facts: no
+  environment: "{{ environment_vars }}"
+
+  vars:
+    RC_0_DATA_SET_NAME: "Z04683.ANSIBLE.ONE"
+
+    DATA_SET_TO_LISTCAT: "Z04683.ANSIBLE.SOMEDS"
+    IDCAMS_STDIN: " LISTCAT ENTRIES('{{ DATA_SET_TO_LISTCAT | upper }}')"
+
   tasks:
-    - name: Touch a file
-      ansible.builtin.file:
-        path: /tmp/ansible_file_from_builtin_file
-        state: touch
+  - name: create some data set
+    block:
+      - name: create data set to LISTCAT
+        zos_data_set:
+          name: "{{ DATA_SET_TO_LISTCAT }}"
+          type: SEQ
+          state: present
+          replace: yes
 
-    - name: Convert file encoding from controller file to USS
-      zos_encode:
-        src: /tmp/ansible_file_from_builtin_file
-        dest: /tmp/ansible_file_from_zos_encode
-        encoding:
-          from: UTF-8
-          to: IBM-1047
+      - name: mvs raw with verbose with rc=0
+        zos_mvs_raw:
+          verbose: True
+          program_name: idcams
+          auth: True
+          dds:
+            - dd_data_set:
+                dd_name: SYSPRINT
+                data_set_name: "{{ RC_0_DATA_SET_NAME }}"
+                disposition: new
+                type: seq
+                return_content:
+                  type: text
+            - dd_input:
+                dd_name: SYSIN
+                content: "{{ IDCAMS_STDIN }}"
+        register: output_rc_0
 
-    - name: Copy inline content to a a USS file with one space
-      zos_copy:
-        content: ' '
-        dest: /tmp/ansible_file_from_zos_copy
-        encoding:
-          from: UTF-8
-          to: IBM-1047
+      - name: print output
+        debug:
+          msg:
+            - "{{ output_rc_0 }}"
+
+
+    always:
+      - name: delete data sets
+        zos_data_set:
+          name: "{{ item }}"
+          state: absent
+        loop:
+          - "{{ DATA_SET_TO_LISTCAT }}"
+          - "{{ RC_0_DATA_SET_NAME }}"
