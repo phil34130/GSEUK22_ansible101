@@ -17,7 +17,7 @@
       - name: create data set to LISTCAT
         zos_data_set:
           name: "{{ DATA_SET_TO_LISTCAT }}"
-          type: SEQ
+          type: seq
           state: present
           replace: yes
 
