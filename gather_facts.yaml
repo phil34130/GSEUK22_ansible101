@@ -15,7 +15,13 @@
 #   IBM z/OS core collection 1.4.0 or later. # TODO update this version!
 #
 ###############################################################################
-
+# can use: ansible-playbook -i inventory.yaml gather_facts.yaml --private-key=$HOME/.ssh/id_rsa
+#  or (see further down)
+#  vars:
+#    ansible_ssh_private_key_file: "{{ playbook_dir }}/files/id_rsa"
+#    ansible_ssh_user: Z04683
+#
+#
 - name: z/OS Gather Facts Sample Playbook
   collections:
     - "ibm.ibm_zos_core"
