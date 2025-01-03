@@ -24,3 +24,7 @@
         wait_time_s: 30
         return_output: true
         max_rc: 0
+      register: submitted_jobs
+
+    - ansible.builtin.debug:
+        var: submitted_jobs
