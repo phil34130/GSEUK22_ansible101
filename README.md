@@ -1055,16 +1055,11 @@ If you want to restart the hands on activities on the lpar use `restart.yaml` It
 	smpe_list_sysmod.yaml 
 	submit_job.yaml
  	submit_job2.yaml 
-	submit_query_output_by_id.yaml 
 	submit_query_retrieve.yaml 
-	system_discover.yaml
- 
-	uri_sample.yaml
- 
-	vars_n_cond.yaml
- 
-	workflow_basic.yaml
- 
-	zosmf_dslist.yaml
- 
+  submit_query_output_by_id.yaml 
+	system_discover.yaml 
+	uri_sample.yaml 
+
+	workflow_basic.yaml 
+	zosmf_dslist.yaml 
 	zosmf_submit_job.yaml

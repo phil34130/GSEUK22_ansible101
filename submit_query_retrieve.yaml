@@ -130,6 +130,9 @@
         remote_src: true
         dest: "{{ data_set_name }}(MEM1)"
         force: true
+        encoding:
+         from: ISO8859-1
+         to: IBM-1047
       register: result
 
     - name: Response for populate {{ data_set_name }} member with data from

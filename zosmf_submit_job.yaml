@@ -36,18 +36,18 @@
     ZOSMF_PORT: 10443
 
     # Desired destination folder on target host for holding definition file
-    ZOSMF_DEST_FOLDER: /z/znnnnn
+    ZOSMF_DEST_FOLDER: /z/z04683
 
     # Credentials to access z/OSMF
-    ZOSMF_USER: Znnnnn
-    ZOSMF_PASS: ppppppp
+    ZOSMF_USER: z04683
+    ZOSMF_PASS: c2harlot
 
 
   tasks:
     - name: Set String
       set_fact:
         string: |
-          //HELLO   JOB (T043JM,JM00,1,0,0,0),'HELLO WORLD - JRM',
+          //HELLO   JOB (T043JM,JM00),'HELLO WORLD - JRM',
           //             MSGCLASS=X,MSGLEVEL=1,NOTIFY=&SYSUID
           /*JOBPARM LINES=9999
           //*
@@ -75,7 +75,7 @@
     - name: Convert file encoding from controller file to USS
       zos_copy:
         src: "{{ playbook_dir }}/HELLO.jcl"   
-        dest: "{{ZOSMF_DEST_FOLDER}}/hello.jcl"
+        dest: "{{ansible_user}}.INPUT(HELLO)"
         force: true
         encoding:
           from: ISO8859-1
@@ -89,9 +89,10 @@
         body_format: json
         body: 
 #          file: "{{lookup('file', 'HELLO.jcl') }}" 
-          file: "{{ZOSMF_DEST_FOLDER}}/hello.jcl" 
+#          file: "{{ZOSMF_DEST_FOLDER}}/hello.jcl" 
 #          file: "{{lookup('file', '{{playbook_dir}}/HELLO.jcl') }}"  
-#          file: //'Z04683.JCL(LISTDS)'
+#          file: //'Z04683.INPUT(HELLO)'
+           file: //INPUT(HELLO)
         headers:
           Content-Type: application/json
           X-CSRF-ZOSMF-HEADER: required_header
