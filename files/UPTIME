@@ -7,7 +7,7 @@
 //*           printed in the job's output listing (SYSOUT).
 //* MSGCLASS: assign an output class for your output listing (SYSOUT)
 //******************************************************************************
-//UPTIME    JOB (T043JM,JM00,1,0,0,0),'UPTIME - JRM',
+//UPTIME    JOB (T043JM,JM00),'UPTIME - JRM',
 //             MSGCLASS=X,MSGLEVEL=1,NOTIFY=&SYSUID
 //*
 //* PRINT USS COMMAND ON JOB OUTPUT

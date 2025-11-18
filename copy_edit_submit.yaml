@@ -73,8 +73,8 @@
       zos_lineinfile:
         src: "{{ tmp_data_set }}(PSA)"
         state: present
-        regexp: "//UPTIME    JOB (T043JM,JM00,1,0,0,0),'UPTIME - JRM',"
-        line: "//PSA    JOB (T043JM,JM00,1,0,0,0),'PSA - JRM',"
+        regexp: "//UPTIME    JOB (T043JM,JM00),'UPTIME - JRM',"
+        line: "//PSA    JOB (T043JM,JM00),'PSA - JRM',"
 
     - name: "Edit JCL PSA step-name on z/OS managed node."
       zos_lineinfile:
@@ -87,8 +87,8 @@
       zos_lineinfile:
         src: "{{ tmp_data_set }}(PSA)"
         state: present
-        regexp: "SH uptime"
-        line: "SH ps -A"
+        regexp: "SH (uptime)"
+        line: "SH (ps -A)"
 
     - name: "Submit the JCL {{ tmp_data_set }}(PSA)"
       zos_job_submit:

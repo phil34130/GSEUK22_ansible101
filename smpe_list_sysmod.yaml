@@ -9,7 +9,7 @@
   gather_facts: no
   vars:
     ptf: 'HL00008'
-    global_csi: 'Z04683.OSHOOLI.GLOBAL.CSI'
+    global_csi: 'Z04683.HOOLI.GLOBAL.CSI'
     zone: GLOBAL
     list_operands: 'SYSMOD({{ ptf }}) HOLDDATA .' 
     SMPOUT_DATA_SET_NAME: "Z04683.ANSIBLE.SMPOUT"
@@ -32,6 +32,14 @@
               data_set_name: "{{ SMPOUT_DATA_SET_NAME }}"
               disposition: new
               type: seq
+              disposition_normal: catalog
+              disposition_abnormal: delete
+              space_type: trk
+              space_primary: 10
+              space_secondary: 10
+              record_format: u
+              record_length: 133
+              block_size: 32760
               return_content:
                 type: text
           - dd_data_set:
@@ -39,6 +47,14 @@
               data_set_name: "{{ SMPLIST_DATA_SET_NAME }}"
               disposition: new
               type: seq
+              disposition_normal: catalog
+              disposition_abnormal: delete
+              space_type: trk
+              space_primary: 10
+              space_secondary: 10
+              record_format: u
+              record_length: 133
+              block_size: 32760
               return_content:
                 type: text
           - dd_output:

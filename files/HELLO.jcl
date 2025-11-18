@@ -14,7 +14,7 @@
 //*   If you change the job name, you must update the playbook job name
 //*   references.
 //******************************************************************************
-//HELLO    JOB (T043JM,JM00,1,0,0,0),'HELLO WORLD - JRM',
+//HELLO    JOB (T043JM,JM00),'HELLO WORLD - JRM',
 //             MSGCLASS=X,MSGLEVEL=1,NOTIFY=&SYSUID
 //*
 //* PRINT "HELLO WORLD" ON JOB OUTPUT

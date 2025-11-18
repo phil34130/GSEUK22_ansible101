@@ -9,8 +9,7 @@
       - name: Submit a IEFBR14
         zos_job_submit:
           src: "{{ansible_user}}.INPUT(ALLOCDS)"
-          location: DATA_SET
-          wait: true
+          location: data_set
           wait_time_s: 60
           return_output: true
         register: job_detail

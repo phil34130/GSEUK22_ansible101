@@ -3,8 +3,7 @@
   hosts: zxplore
   gather_facts: false
   environment: "{{ environment_vars }}"
-  connection: ibm.ibm_zos_core.zos_ssh
-
+  
   collections:
     - ibm.ibm_zos_core
   tasks:
