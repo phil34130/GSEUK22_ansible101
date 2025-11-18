@@ -12,6 +12,7 @@
       ibm.ibm_zos_core.zos_copy:
         content: "Hello World"
         dest: /z/z04683/hello_from_GSE
+        force: true
 
     - name: "Copy from content to dataset"
       ibm.ibm_zos_core.zos_copy:
