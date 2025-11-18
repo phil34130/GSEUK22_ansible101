@@ -72,7 +72,8 @@ Collecting ansible-core~=2.17.7
   Downloading ansible_core-2.17.14-py3-none-any.whl (2.2 MB)
      ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 2.2/2.2 MB 112.5 MB/s eta 0:00:00
 
-     ```
+  ```
+## verify the ansible version
 Enter: ansible --version
 ansible --version
 ansible [core 2.17.14]
