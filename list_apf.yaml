@@ -1,0 +1,13 @@
+---  see https://github.com/IBM/z_ansible_collections_samples?tab=readme-ov-file#z-topics
+- name: List APF
+  hosts: zxplore
+    gather_facts: false
+    environment: "{{ environment_vars }}"
+    collections:
+      - ibm.ibm_zos_core
+  
+    tasks:
+    - name: List APF
+      ibm.ibm_zos_core.zos_apf:
+        operation: list
+      register: myapf

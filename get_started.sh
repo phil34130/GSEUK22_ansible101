@@ -12,6 +12,7 @@ pip --version
 
 # sudo apt-get install ansible -y
 
+
 echo 'all:' >> inventory.yaml
 echo '  hosts:' >> inventory.yaml
 echo '    zxplore:' >> inventory.yaml
@@ -39,6 +40,7 @@ sudo apt-get install sshpass -y
 
 pip install ansible
 pip install "ansible-lint"
+sudo apt install ansible-lint
 
 
 code --install-extension Zowe.vscode-extension-for-zowe

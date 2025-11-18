@@ -6,7 +6,7 @@
   collections:
     - ibm.ibm_zos_core
   vars:
-    dsname: "Z04683.ANSB.DSN1"
+    dsname: "{{ ansible_user | upper }}.ANSB.DSN1"
   tasks:
     - name: Prepare our job
       ansible.builtin.template:
