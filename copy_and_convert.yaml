@@ -24,7 +24,7 @@
 
     - name: "Copy and re-encode"
       zos_encode:
-        src: /z/z04683/python/fia.py
+        src: /z/z04683/python/fib.py
         dest: Z04683.CHKZOA.PY
         encoding:
           from: IBM-1047

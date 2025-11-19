@@ -74,6 +74,7 @@ Collecting ansible-core~=2.17.7
 
   ```
 ## verify the ansible version
+```
 Enter: ansible --version
 ansible --version
 ansible [core 2.17.14]
