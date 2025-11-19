@@ -1,0 +1,31 @@
+---
+- name: "Get XMIT Archive of JCL"
+  hosts: zxplore
+  gather_facts: no
+  environment: "{{ environment_vars }}"
+  collections:
+    - ibm.ibm_zos_core
+  tasks:
+    - name: "Start timestamp"
+      debug:
+       msg: "{{ lookup('pipe','date') }}"
+
+    - name: "Create an XMIT Archive for Z04683.JCL"
+      zos_archive:
+        src:
+          - "Z04683.JCL"
+        format:
+          name: "xmit"
+        dest: "Z04683.JCL.XMIT"
+        force: true
+
+    - name: "Fetch the archive"
+      zos_fetch:
+        src: "Z04683.JCL.XMIT"
+        dest: "/tmp/"
+        is_binary: true
+        flat: true
+
+    - name: "End timestamp"
+      debug:
+        msg: "{{ lookup('pipe','date') }}"
