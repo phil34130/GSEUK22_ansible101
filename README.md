@@ -74,8 +74,9 @@ Collecting ansible-core~=2.17.7
 
   ```
 ## verify the ansible version
-```
+
 Enter: ansible --version
+```
 ansible --version
 ansible [core 2.17.14]
   config file = None
@@ -86,9 +87,10 @@ ansible [core 2.17.14]
   python version = 3.10.12 (main, Sep 11 2024, 15:47:36) [GCC 11.4.0] (/usr/bin/python3)
   jinja version = 3.1.6
   libyaml = True
-
+```
 And the inventory with data for the ZXplore lpar will be ready.
 you can verify your inventory.yaml file that has been populated withy your zexplore credentials and IP address
+```
 all:
   hosts:
     zxplore:
@@ -116,7 +118,7 @@ all:
 ```
 ## Ansible AD HOC Commands: test create a  new local folder
 codeany ➜ /workspaces/GSEUK22_ansible101 (main) $ ansible localhost -m file -a "path=./test_folder state=directory"
-
+```
 [WARNING]: No inventory was parsed, only implicit localhost is available
 localhost | CHANGED => {
     "changed": true,
@@ -130,9 +132,10 @@ localhost | CHANGED => {
     "uid": 1000
 }
 
-
+```
 ## Ansible AD HOC Commands: test a local shell command
 ansible localhost -m shell -a "ls -al"
+```
 [WARNING]: No inventory was parsed, only implicit localhost is available
 localhost | CHANGED | rc=0 >>
 total 208
@@ -183,8 +186,9 @@ drwxr-xr-x 2 codeany codeany    10 Nov 17 16:40 test_folder
 -rw-r--r-- 1 codeany codeany  2021 Nov 17 16:13 zosmf_dslist.yaml
 -rw-r--r-- 1 codeany codeany  3280 Nov 17 16:13 zosmf_submit_job.yaml
 -rw-r--r-- 1 codeany codeany   871 Nov 17 16:13 zowe.config.json
-
+```
 ## Ansible test ping : using inventory.yaml
+```
 codeany ➜ /workspaces/GSEUK22_ansible101 (main) $  ansible -i inventory.yaml zxplore -m ping
 zxplore | SUCCESS => {
     "changed": false,
@@ -337,7 +341,7 @@ ibm.ibm_zosmf:1.5.0 was installed successfully
 ```
 ➜ Now invoke this playbook with:
 ansible-playbook -i inventory.yaml hello.yaml 
-
+```
  ansible-playbook -i inventory.yaml hello.yaml 
 
 PLAY [zxplore] *************************************************************************************************************************************************
@@ -354,12 +358,14 @@ changed: [zxplore]
 PLAY RECAP *****************************************************************************************************************************************************
 zxplore                    : ok=3    changed=1    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0   
 
+```
 You can verify on your TSO session Z04683.ANSIBLE.TEST1
+```
  BROWSE    Z04683.ANSIBLE.TEST1  
 *********************************
 Hello World                      
 ******************************** 
-
+```
 
 ➜ Open copy_parmlib_member.yaml
 1- Lets now change it, Lets create a copy of our active IEASYS00 to USERID.ANSB.PARMLIB, first allocate the PDS with `zos_data_set` module.
@@ -412,7 +418,7 @@ role (and include_role) params
 include params
 extra vars (for example, -e "user=my_user")(always win precedence)
 ```
-
+## variables
 The variable can NOT be named starting with number, have `space`, `.` or `-`. Neither use python or playbook keywords.
 
 3 - So now, instead of keeping your parmlib, the copy and the member hardcoded on the playbook, use as a variable defining them as `play vars`.
@@ -427,6 +433,7 @@ The variable can NOT be named starting with number, have `space`, `.` or `-`. Ne
 To reference that we will use Jinja2 format, including the var inside of double curly braces `{{ var_name }}`
 
 https://jinja.palletsprojects.com/en/3.1.x/
+
 
 4 - Now update your tasks:
 
@@ -456,8 +463,9 @@ https://jinja.palletsprojects.com/en/3.1.x/
         remote_src: true
 
 ```
+## invoke playbook
 ➜Now invoke this playbook with:
- 
+ ```
 ansible-playbook -i inventory.yaml copy_parmlib_member.yaml 
 
 PLAY [Creating a copy of parmlib member] ***********************************************************************************************************************
@@ -470,8 +478,10 @@ changed: [zxplore]
 
 PLAY RECAP *****************************************************************************************************************************************************
 zxplore                    : ok=2    changed=1    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0   
+```
 
 you can verify on TSO the content of Z04683.ANSB.PARMLIB(IEASYS00)
+```
  BROWSE    Z04683.ANSB.PARMLIB(IEASYS00)            Line 0000000000 Col 00
 ********************************* Top of Data ****************************
 CLPA,                                                                     
@@ -479,6 +489,7 @@ REAL=280,                    ALLOWS 2 64K JOBS OR 1 128K JOB TO RUN V=R
 RSU=0,                       NO RECONFIG STORAGE UNITS          DEFAULT   
 VRREGN=140                   DEFAULT REAL-STORAGE REGION SIZE             
 ******************************** Bottom of Data **************************
+```
 
 ➜ Open iplinfo_device.yaml
 1- Let's now play with the `set_fact` option and `lookup` to read our `iplinfo` file, and take decisions based on this output. We are doing it instead of using the zos command cause we don't have authority to issue commands on this lpar.
@@ -510,11 +521,12 @@ Manipulate strings is very useful tool, for example we could take from thee fact
     - name: Displaying var
       ansible.builtin.debug:
         msg: "The last IPL was on address {{ ipladdress[0][1] }}"
-
+```
+## invoke playbook
 ➜Now invoke this playbook with:
  
 ansible-playbook -i inventory.yaml iplinfo_device.yaml 
-
+```
 TASK [Getting content of iplinfo file] *********************************************************************************
 ok: [zxplore]
 
@@ -528,9 +540,11 @@ ok: [zxplore] => {
 
 PLAY RECAP *************************************************************************************************************
 zxplore                    : ok=3    changed=0    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0
-``
+```
 ➜Now Open file copy_local_dir_to_pds.yaml, which will copy the local files under /files as members of your userid.ANSB.JCL PDS dataset. 
+## invoke playbook
 Invoke the playbook with:  ansible-playbook -i inventory.yaml copy_local_dir_to_pds.yaml 
+```
 ansible-playbook -i inventory.yaml copy_local_dir_to_pds.yaml 
 
 PLAY [zxplore] *************************************************************************************************************************************************
@@ -540,8 +554,10 @@ changed: [zxplore]
 
 PLAY RECAP *****************************************************************************************************************************************************
 zxplore                    : ok=1    changed=1    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0   
-
-➜Now check on TSO the content of Z04683.ANSB.JCL   
+```
+## check
+➜Now check on TSO the content of Z04683.ANSB.JCL  
+``` 
  BROWSE            Z04683.ANSB.JCL    
             Name     Prompt       Size
  _________ CLIST                      
@@ -551,6 +567,7 @@ zxplore                    : ok=1    changed=1    unreachable=0    failed=0    s
  _________ UPTIME                     
            **End**                    
 
+```
 ## Looping and Conditions
 ➜Now Open file active_tasks.yaml
 
@@ -617,11 +634,12 @@ when: task_to_search in command_result
           member: JOB2
       when: task_to_search not in active_tasks
 ```
-
+## challenge
 > Challenge - What if you create a block for executing your jobs and print a message that it's happening or print a message if it's not and task is active?
 
 ➜Invoke the playbook with:  ansible-playbook -i inventory.yaml active_tasks.yaml 
 You should get:
+```
 PLAY [Creating a copy of parmlib member] ***********************************************************************************************************************
 
 TASK [Setting variables] ***************************************************************************************************************************************
@@ -949,8 +967,10 @@ ok: [zxplore] => {
 }
 
 PLAY RECAP *****************************************************************************************************************************************************
-zxplore                    : ok=3    changed=1    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0   
+zxplore   
+              : ok=3    changed=1    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0   
 
+```
 ## Templating
 ➜now open playbook file:  templating_submi_job_and_get_output.yaml 
 
@@ -1061,6 +1081,13 @@ If you want to restart the hands on activities on the lpar use `restart.yaml` It
   submit_query_output_by_id.yaml 
 	system_discover.yaml 
 	uri_sample.yaml 
+  copy_and_convert.yaml
+
+  Backup/restore/xmit/terse/unterse:
+    ➜zos_copy_xmit.yaml
+    ➜zos_archive_xmit.yaml
+    ➜terse.yaml
+    ➜unterse.yaml
 
 	workflow_basic.yaml 
 	zosmf_dslist.yaml 
