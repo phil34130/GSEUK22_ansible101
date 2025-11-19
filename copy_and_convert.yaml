@@ -1,0 +1,34 @@
+---
+- name: "Copy a USS file to a PS and convert from 1047 to 37"
+  hosts: zxplore
+  gather_facts: no
+  environment: "{{ environment_vars }}"
+  collections:
+    - ibm.ibm_zos_core
+  tasks:
+    - name: "Start timestamp"
+      debug:
+       msg: "{{ lookup('pipe','date') }}"
+    - name: "(Re)Create target dataset"
+      zos_data_set:
+        name: Z04683.CHKZOA.PY
+        state: present
+        replace: true
+        type: SEQ
+        space_type: TRK
+        space_primary: 1
+        space_secondary: 1
+        record_format: VB
+        record_length: 250
+        block_size: 27900
+
+    - name: "Copy and re-encode"
+      zos_encode:
+        src: /z/z04683/python/fia.py
+        dest: Z04683.CHKZOA.PY
+        encoding:
+          from: IBM-1047
+          to: IBM-037             
+    - name: "End timestamp"
+      debug:
+        msg: "{{ lookup('pipe','date') }}"
