@@ -1,0 +1,20 @@
+---
+- hosts: zxplore
+  gather_facts: no
+  environment: "{{ environment_vars }}"
+  collections:
+    - ibm.ibm_zos_core
+  tasks:
+    - name: "Start timestamp"
+      debug:
+        msg: "{{ lookup('pipe','date') }}"
+    - name: "Get the current APF list"
+      zos_apf:
+        operation: list
+      register: apflist
+    - name: "Report the current APF list"
+      debug:
+        msg: "APF datasets : {{ apflist }}"
+    - name: "End timestamp"
+      debug:
+        msg: "{{ lookup('pipe','date') }}"
