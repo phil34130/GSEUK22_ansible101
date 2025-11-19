@@ -14,11 +14,11 @@
         name: Z04683.CHKZOA.PY
         state: present
         replace: true
-        type: SEQ
-        space_type: TRK
+        type: seq
+        space_type: trk
         space_primary: 1
         space_secondary: 1
-        record_format: VB
+        record_format: vb
         record_length: 250
         block_size: 27900
 
