@@ -1056,7 +1056,7 @@ If you want to restart the hands on activities on the lpar use `restart.yaml` It
 
 
 ## Some of the sample playbooks you may want to try: 
-
+```
 	system_discover.yaml
   active_tasks.yaml
   list_apf.yaml 
@@ -1092,3 +1092,4 @@ If you want to restart the hands on activities on the lpar use `restart.yaml` It
 	workflow_basic.yaml 
 	zosmf_dslist.yaml 
 	zosmf_submit_job.yaml
+```
