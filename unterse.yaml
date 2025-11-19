@@ -1,0 +1,18 @@
+---
+- name: "unterse JCL and LOAD"
+  hosts: zxplore
+  gather_facts: no
+  environment: "{{ environment_vars }}"
+  collections:
+    - ibm.ibm_zos_core
+  tasks:
+    - name: "Restore datasets (DUMP/Terse)"
+      zos_backup_restore:
+        operation: "restore"
+        data_sets:
+          include:
+          - "Z04683.JCL"
+          - "Z04683.LOAD"
+#          exclude: "Z04683.LOAD"
+        backup_name: "Z04683.TRS"
+        overwrite: true
