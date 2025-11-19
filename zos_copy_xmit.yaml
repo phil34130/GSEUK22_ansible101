@@ -1,5 +1,5 @@
 ---
-- name: "Get XMIT Archive of JCL"
+- name: "Copy XMIT Archive to PDS.XMIT"
   hosts: zxplore
   gather_facts: no
   environment: "{{ environment_vars }}"
@@ -9,20 +9,11 @@
     - name: "Start timestamp"
       debug:
        msg: "{{ lookup('pipe','date') }}"
-
-    - name: "Create an XMIT Archive for Z04683.JCL"
-      zos_archive:
-        src:
-          - "Z04683.JCL"
-        format:
-          name: "xmit"
-        dest: "Z04683.JCL.XMIT"
-        force: true
-
+  
     - name: "copy the archive"
       zos_copy:
-        src: "Z04683.JCL.XMIT"
-        dest: "/tmp/Z04683.JCL.XMIT"
+        dest: "Z04683.JCL.XMIT"
+        src: "/tmp/Z04683.JCL.XMIT"
         remote_src: true
         is_binary: true
         force: true
