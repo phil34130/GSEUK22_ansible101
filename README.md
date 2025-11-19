@@ -1,4 +1,4 @@
-# zAcademie_ansible101
+# zAcadémie_ansible101
 
 Repository for Ansible 101 course with hands on activities
 
