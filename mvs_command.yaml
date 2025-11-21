@@ -22,10 +22,10 @@
           
       - name: Checking active tasks for {{ system_name }}
         zos_operator:
-          cmd: "D A,IZU*"
+          cmd: "D A,L"
           verbose: true
         register: result_zos_operator
       
-      - name: Fact `system_name` set with value
+      - name: Fact `z/OS active tasks` set with value
         debug:
           msg: "{{ result_zos_operator.content }}"        
