@@ -92,7 +92,7 @@
 #          file: "{{ZOSMF_DEST_FOLDER}}/hello.jcl" 
 #          file: "{{lookup('file', '{{playbook_dir}}/HELLO.jcl') }}"  
 #          file: //'Z04683.INPUT(HELLO)'
-           file: //INPUT(HELLO)
+          file: //'{{ ansible_user }}.INPUT(HELLO)''
         headers:
           Content-Type: application/json
           X-CSRF-ZOSMF-HEADER: required_header
@@ -102,6 +102,6 @@
         return_content: true
       register: zosmf_result
 
-    - name: Response dslist {{ ZOSMF_HLQ }} 
+    - name: Response HELLO JOB output 
       ansible.builtin.debug:
         msg: "{{ zosmf_result }}"
