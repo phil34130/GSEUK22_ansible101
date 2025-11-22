@@ -11,15 +11,15 @@
 
       ansible.builtin.copy:
 
-        src: ../files/python_jcl.py
-
-        dest: /tmp/python_jcl.py
+        src: ../files/python_script
+        
+        dest: /tmp/python_script.py
 
         mode: '0755'
 
     - name: Run script
 
-      shell: "python3 /tmp/python_jcl.py"
+      shell: "python3 /tmp/python_script.py"
 
       register: result
 
