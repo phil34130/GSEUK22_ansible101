@@ -1,0 +1,30 @@
+---
+- name: "Copy a USS file to a PS and convert from 1047 to 37"
+  hosts: zxplore
+  gather_facts: no
+  environment: "{{ environment_vars }}"
+  collections:
+    - ibm.ibm_zos_core
+  tasks:
+
+    - name: Copy scripts
+
+      ansible.builtin.copy:
+
+        src: ../files/python_jcl.py
+
+        dest: /tmp/python_jcl.py
+
+        mode: '0755'
+
+    - name: Run script
+
+      shell: "python3 /tmp/python_jcl.py"
+
+      register: result
+
+    - ansible.builtin.debug:
+
+            msg: "{{ result.stdout }}"
+
+   
