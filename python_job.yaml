@@ -1,5 +1,5 @@
 ---
-- name: "Copy a USS file to a PS and convert from 1047 to 37"
+- name: "python script to submit a job and get its ouput"
   hosts: zxplore
   gather_facts: no
   environment: "{{ environment_vars }}"
