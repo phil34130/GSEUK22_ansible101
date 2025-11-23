@@ -21,10 +21,10 @@ def subsd(fname):
 
   i=1
   while joppie.status == 'AC':
-    sleep(0.1)
-    print('\r Running job', i* '.',"end =", flush=True)
-  i+=1
-  joppie.refresh()
+    sleep(1.0)
+    print('\r Running job', i * '.',"end =", flush=True)
+    i+=1
+    joppie.refresh()
 
   printjob(joppie.job_id)
   print(120 * '*')
