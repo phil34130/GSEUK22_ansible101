@@ -1,0 +1,34 @@
+---
+- hosts: zxplore
+  gather_facts: no
+  environment: "{{ environment_vars }}"
+  collections:
+    - ibm.ibm_zos_core
+  
+  tasks:
+    - name: Ping host - {{ inventory_hostname }}
+      ping:
+      register: result
+    - name: Response
+      debug:
+        msg: "{{ result.ping }}" 
+    - name: Setting fact `data_set_name` for use by this sample
+      set_fact:
+        data_set_name: "{{ ansible_user | upper }}.SOME.DATA.SET"
+
+    - name: Create a PDS data set {{ data_set_name }}
+      zos_data_set:
+         name: "{{ data_set_name }}"
+         type: pds
+         space_primary: 5
+         space_type: m
+         record_format: fb
+         record_length: 80
+         replace: true
+
+      register: result
+
+    - name: Response create a PDS data set {{ data_set_name }}
+      debug:
+         msg: "{{ result }}"
+

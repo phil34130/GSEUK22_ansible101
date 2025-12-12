@@ -1,0 +1,24 @@
+---
+
+- name: Authenticate with z/OSMF server by username/password
+  hosts: zxplore
+  collections:
+    - ibm.ibm_zos_zosmf
+  gather_facts: false
+  environment:
+    "{{ environment_vars }}"
+
+  vars:
+    zmf_host: "204.90.115.200"
+    zmf_port: "10443"
+    zmf_user: "zxxxx"
+    zmf_password: "ppppppp" 
+
+  tasks:
+    - zmf_authenticate:
+        zmf_host: "{{ zmf_host }}"
+        zmf_port: "{{ zmf_port }}"
+        zmf_user: "{{ zmf_user }}"
+        zmf_password: "{{ zmf_password }}"
+      register: result_auth
+    - debug: var=result_auth

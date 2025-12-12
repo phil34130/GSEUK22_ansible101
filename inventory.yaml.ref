@@ -4,6 +4,7 @@ all:
       ansible_user: Znnnnn
       ansible_password: ppppppp
       ansible_host: 204.90.115.200
+      inventory_hostname: S0W1
       PYZ: "/usr/lpp/IBM/cyp/v3r9/pyz"
       ZOAU: "/usr/lpp/IBM/zoautil"
       ansible_ssh_common_args: "-o StrictHostKeyChecking=no"
