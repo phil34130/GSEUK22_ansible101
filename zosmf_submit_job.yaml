@@ -84,7 +84,7 @@
       uri:
         url: https://{{ ZOSMF_HOST }}:{{ ZOSMF_PORT }}/zosmf/restjobs/jobs/
         user: "{{ ZOSMF_USER }}"
-        password: "{{ ZOSMF_PASS }}"
+        password: "{{ ansible_password }}"
         method: PUT
         body_format: json
         body: 
