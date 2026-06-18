@@ -25,7 +25,7 @@
         verbose: true
       register: result_zos_operator
   
-    - name: Checking z/OSMF status
+    - name: Checking zOSMF status
       debug:
         msg: "{{ result_zos_operator.content }}"
 
