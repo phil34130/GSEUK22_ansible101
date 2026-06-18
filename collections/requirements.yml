@@ -1,4 +1,5 @@
 ---
 collections:
-  - name: ibm.ibm_zos_core:1.16.0
+  - name: ibm.ibm_zos_core
+    version: 1.16.0  # Force la version exacte pou zexplore
   - name: ibm.ibm_zos_zosmf
