@@ -16,7 +16,7 @@
     - name: "Allocate our parmlib copy dataset"
       ibm.ibm_zos_core.zos_data_set:
         name: "{{ target_library }}"
-        type: PDS
+        type: pds
         state: present
 
     - name: "COPY IEASYS00"
