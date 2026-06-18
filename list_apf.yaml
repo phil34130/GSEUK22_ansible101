@@ -1,13 +1,19 @@
 ---  see https://github.com/IBM/z_ansible_collections_samples?tab=readme-ov-file#z-topics
-- name: List APF
+- name: list APF
   hosts: zxplore
-    gather_facts: false
-    environment: "{{ environment_vars }}"
-    collections:
-      - ibm.ibm_zos_core
+  gather_facts: false
+  environment: "{{ environment_vars }}"
+  collections:
+    - ibm.ibm_zos_core
   
-    tasks:
-    - name: List APF
-      ibm.ibm_zos_core.zos_apf:
-        operation: list
-      register: myapf
+  tasks:
+      - name: List APF
+        ibm.ibm_zos_core.zos_apf:
+          operation: list
+        register: myapf
+      - name: Setting fact `APF list`
+        set_fact:
+          apf_list: "{{ myapf.stdout}}"
+      - name: Fact `apf list` set with value
+        debug:
+          msg: "{{ apf_list }}"     
