@@ -1,4 +1,4 @@
 ---
 collections:
-  - name: ibm.ibm_zos_core
+  - name: ibm.ibm_zos_core:1.16.0
   - name: ibm.ibm_zos_zosmf
