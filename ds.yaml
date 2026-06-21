@@ -14,7 +14,7 @@
         msg: "{{ result.ping }}" 
     - name: Setting fact `data_set_name` for use by this sample
       set_fact:
-        data_set_name: "{{ ansible_user | upper }}.SOME.DATA.SET"
+        data_set_name: "{{ ansible_user | upper }}.ANSB.JCL"
 
     - name: Create a PDS data set {{ data_set_name }}
       zos_data_set:
