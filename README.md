@@ -541,7 +541,7 @@ ok: [zxplore] => {
 PLAY RECAP *************************************************************************************************************
 zxplore                    : ok=3    changed=0    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0
 ```
-➜Now Open file copy_local_dir_to_pds.yaml, which will copy the local files under /files as members of your userid.ANSB.JCL PDS dataset. 
+➜Now Open file copy_local_dir_to_pds.yaml, which will copy the local files under /files as members of your userid.ANSB.JCL PDS dataset. The PDS will be created if not existing
 ## invoke playbook
 Invoke the playbook with:  ansible-playbook -i inventory.yaml copy_local_dir_to_pds.yaml 
 ```
@@ -558,14 +558,16 @@ zxplore                    : ok=1    changed=1    unreachable=0    failed=0    s
 ## check
 ➜Now check on TSO the content of Z04683.ANSB.JCL  
 ``` 
- BROWSE            Z04683.ANSB.JCL    
-            Name     Prompt       Size
- _________ CLIST                      
- _________ DSINFO                     
- _________ HELLO                      
- _________ RXSAY                      
- _________ UPTIME                     
-           **End**                    
+BROWSE            Z04683.ANSB.JCL9S                 
+           Name     Prompt       Size   Created     
+_________ CLIST                                     
+_________ DSINFO                                    
+_________ HELLO                                     
+_________ JOB1                                      
+_________ JOB2                                      
+_________ RXSAY                                     
+_________ UPTIME                                    
+          **End**                                                      
 
 ```
 ## Looping and Conditions
@@ -573,7 +575,7 @@ zxplore                    : ok=1    changed=1    unreachable=0    failed=0    s
 
 We also have the hability as in other programming languages, to work with loops and conditions.
 
-To get started let's create a PDS `USERID.ANSB.JCL` and add this 2 JCLs:
+The previous palybook should have created PDS `USERID.ANSB.JCL` and added those 2 JCLs:
 
 ```
 JOB1
@@ -987,10 +989,12 @@ It is located under /templates local directory: job14-1.j2
 //JCL14   JOB 1
 //***************************************************/
 //HELLO   EXEC PGM=IEFBR14
-//DSN1    DD DSN={{dsname}}1,
-//        DISP=(NEW,CATLG),
-//        UNIT=SYSALLDA,
-//        SPACE=(TRK,1)
+{% for dataset in datasets_to_be_allocated %}
+//{{dataset.ddname}}  DD DSN={{dataset.dsname}},
+//      DISP=(NEW,CATLG),
+//      UNIT=SYSALLDA,
+//      SPACE=(TRK,1),DCB=(RECFM=FB,LRECL=80,BLKSIZE=0),DSNTYPE=PDS
+{% endfor %}
 ```
 
 Inside of the `.j2` file we use the same notation as in the playbook, using the `{{}}` to point a variable. And we can perform multiple operations, conditions, loop, following the same format we have seen, the `Jinja2`.
@@ -1007,7 +1011,7 @@ So let's how the template module works:
 
 
 In the `src` we have the location where the template is on tontrol node, and on the `dest` where the results will be saved on target host.
-➜now execute this playbook with:    ansible-playbook -i inventory.yaml templating_submit_job_and_get_output.yaml 
+➜now execute this playbook with:    ansible-playbook -i inventory.yaml templating-2.yaml 
 
 Just a last exercise with the templating, let's add multiple DD fields so we can pass a list of datasets from the playbook to be allocated.
 
@@ -1058,8 +1062,8 @@ If you want to restart the hands on activities on the lpar use `restart.yaml` It
 ## Some of the sample playbooks you may want to try: 
 ```
 	system_discover.yaml
-  active_tasks.yaml
-  list_apf.yaml 
+    active_tasks.yaml
+    list_apf.yaml 
 	convert_text.yaml 
 	copy_edit_submit.yaml 
 	copy_local_dir_to_pds.yaml 
@@ -1078,10 +1082,11 @@ If you want to restart the hands on activities on the lpar use `restart.yaml` It
 	submit_job.yaml
  	submit_job2.yaml 
 	submit_query_retrieve.yaml 
-  submit_query_output_by_id.yaml 
-	system_discover.yaml 
+    submit_query_output_by_id.yaml 
+	system_discover.yaml
+	templating.yaml
 	uri_sample.yaml 
-  copy_and_convert.yaml
+ 	copy_and_convert.yaml
 
   Backup/restore/xmit/terse/unterse:
     ➜zos_copy_xmit.yaml
