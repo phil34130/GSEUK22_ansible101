@@ -972,7 +972,7 @@ zxplore
 
 ```
 ## Templating
-➜now open playbook file:  templating_submi_job_and_get_output.yaml 
+➜now open playbook file:  templating2.yaml 
 
 Templating is another useful function we can make use. On previous task we have submitted some jobs, but if these jobs need to be customized before we submit them?
 
