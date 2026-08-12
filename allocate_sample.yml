@@ -89,4 +89,4 @@
 
     - name: Display TSO LISTDS confirmation from mainframe
       ansible.builtin.debug:
-        msg: "{{ tso_output.dd_data | map(attribute='content') | list }}"
+        msg: "{{ tso_output.stdout | default(tso_output.dds | map(attribute='content') | list) }}"
