@@ -71,18 +71,24 @@
     - name: Output allocation success confirmation
       ansible.builtin.debug:
         msg: "Successfully created and populated {{ clean_dsorg }} dataset: {{ clean_dsname }}"
+    # FIXED: Restructured dd_output and dd_input to isolate dd_name inside them
     - name: Verify dataset attributes via TSO LISTDS command
       ibm.ibm_zos_core.zos_mvs_raw:
         program_name: IKJEFT01
         auth: true
         dds:
-          - dd_name: SYSTSPRT
-            dd_output: { sysout_class: '*' }
-          - dd_name: SYSTSIN
-            dd_input:
+          - dd_output:
+              dd_name: SYSTSPRT
+              sysout_class: '*'
+          - dd_input:
+              dd_name: SYSTSIN
               content: |
                 LISTDS '{{ clean_dsname }}'
       register: tso_output
+
+    - name: Display TSO LISTDS confirmation from mainframe
+      ansible.builtin.debug:
+        msg: "{{ tso_output.dd_responses | map(attribute='content') | list }}"
 
     - name: Display TSO LISTDS confirmation from mainframe
       ansible.builtin.debug:
