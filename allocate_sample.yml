@@ -72,14 +72,14 @@
       ansible.builtin.debug:
         msg: "Successfully created and populated {{ clean_dsorg }} dataset: {{ clean_dsname }}"
     # FIXED: Restructured dd_output and dd_input to isolate dd_name inside them
-    # ALTERNATIVE METHOD: Cleaner execution mapping
+    # FIXED: Replaced zos_mvs_raw with a simplified TSO command module
     - name: Verify dataset attributes via zos_tso_command
       ibm.ibm_zos_core.zos_tso_command:
         commands:
-          - LISTDS '{{ clean_dsname }}'
-      register: tso_cmd_output
+          - "LISTDS '{{ clean_dsname }}'"
+      register: tso_cmd_result
 
+    # FIXED: Output format is always standardized as a top-level list of dictionaries
     - name: Display TSO LISTDS confirmation from mainframe
       ansible.builtin.debug:
-        # Loops through the dd_data list and extracts the text lines from your SYSTSPRT output block
-        msg: "{{ (tso_output.dd_data | selectattr('dd_name', 'equalto', 'SYSTSPRT') | first).content }}"
+        msg: "{{ tso_cmd_result.output[0].stdout_lines }}"
