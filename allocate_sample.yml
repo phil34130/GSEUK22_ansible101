@@ -81,4 +81,5 @@
 
     - name: Display TSO LISTDS confirmation from mainframe
       ansible.builtin.debug:
-        msg: "{{ tso_cmd_output.output[0].stdout_lines }}"
+        # Loops through the dd_data list and extracts the text lines from your SYSTSPRT output block
+        msg: "{{ (tso_output.dd_data | selectattr('dd_name', 'equalto', 'SYSTSPRT') | first).content }}"
