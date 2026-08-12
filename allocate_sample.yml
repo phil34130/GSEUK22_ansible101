@@ -79,7 +79,7 @@
           - "LISTDS '{{ clean_dsname }}'"
       register: tso_cmd_result
 
-    # FIXED: Output format is always standardized as a top-level list of dictionaries
     - name: Display TSO LISTDS confirmation from mainframe
       ansible.builtin.debug:
+        # FIXED: Added [0] to get the result of the first command in the list
         msg: "{{ tso_cmd_result.output[0].stdout_lines }}"
