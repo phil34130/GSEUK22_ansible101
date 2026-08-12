@@ -72,21 +72,13 @@
       ansible.builtin.debug:
         msg: "Successfully created and populated {{ clean_dsorg }} dataset: {{ clean_dsname }}"
     # FIXED: Restructured dd_output and dd_input to isolate dd_name inside them
-    - name: Verify dataset attributes via TSO LISTDS command
-      ibm.ibm_zos_core.zos_mvs_raw:
-        program_name: IKJEFT01
-        auth: true
-        dds:
-          - dd_output:
-              dd_name: SYSTSPRT
-              return_content:
-                type: text
-          - dd_input:
-              dd_name: SYSTSIN
-              content: |
-                LISTDS '{{ clean_dsname }}'
-      register: tso_output
+    # ALTERNATIVE METHOD: Cleaner execution mapping
+    - name: Verify dataset attributes via zos_tso_command
+      ibm.ibm_zos_core.zos_tso_command:
+        commands:
+          - LISTDS '{{ clean_dsname }}'
+      register: tso_cmd_output
 
     - name: Display TSO LISTDS confirmation from mainframe
       ansible.builtin.debug:
-        msg: "{{ tso_output.stdout | default(tso_output.dds | map(attribute='content') | list) }}"
+        msg: "{{ tso_cmd_output.output[0].stdout_lines }}"
