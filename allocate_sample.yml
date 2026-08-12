@@ -79,7 +79,8 @@
         dds:
           - dd_output:
               dd_name: SYSTSPRT
-              sysout_class: '*'
+              return_content:
+                type: text
           - dd_input:
               dd_name: SYSTSIN
               content: |
@@ -89,7 +90,3 @@
     - name: Display TSO LISTDS confirmation from mainframe
       ansible.builtin.debug:
         msg: "{{ tso_output.dd_responses | map(attribute='content') | list }}"
-
-    - name: Display TSO LISTDS confirmation from mainframe
-      ansible.builtin.debug:
-        msg: "{{ tso_output.dd_responses[0].content }}"
