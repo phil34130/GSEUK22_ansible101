@@ -46,7 +46,7 @@
         space_type: "{{ 'trk' if clean_dsorg in ['SEQ', 'PDS'] else 'trk' }}" # FIXED: Must be lowercase 'trk' or 'cyl'
         space_primary: 10
         space_secondary: 2
-        record_format: FB
+        record_format: fb               # FIXED: Changed from 'FB' to lowercase 'fb'
         record_length: 80
         directory_blocks: "{{ 5 if clean_dsorg == 'PDS' else omit }}"
 
