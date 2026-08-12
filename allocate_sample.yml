@@ -6,48 +6,68 @@
   collections:
     - ibm.ibm_zos_core
   vars:
-    # Sanitize survey inputs by removing spaces and forcing uppercase
     clean_dsname: "{{ dsname | trim | upper }}"
     clean_dsorg: "{{ dsorg | trim | upper }}"
+    # Define sample content lines to insert
+    sample_content:
+      - "/* SAMPLE FILE CREATED BY ANSIBLE AWX */"
+      - "IDENTIFICATION DIVISION."
+      - "PROGRAM-ID. HELLO."
+      - "PROCEDURE DIVISION."
+      - "    DISPLAY 'HELLO MAINFRAME'."
+      - "    GOBACK."
 
   tasks:
-    - name: Validate that dataset name follows z/OS standards
+    - name: Validate dataset name syntax
       ansible.builtin.fail:
         msg: "Invalid dataset name syntax. Segments must be 1-8 chars and total length <= 44."
       when: >
         not (clean_dsname | match('^[A-Z@#$][A-Z0-9@#$-]{0,7}(\\.[A-Z@#$][A-Z0-9@#$-]{0,7})*$')) 
         or (clean_dsname | length > 44)
 
+    # FIXED: Using zos_stat to check if the dataset exists
     - name: Check if dataset already exists
-      ibm.ibm_zos_core.zos_data_set_info:
+      ibm.ibm_zos_core.zos_stat:
         name: "{{ clean_dsname }}"
-      register: ds_info
+      register: ds_stat_result
 
+    # FIXED: zos_stat returns an 'exists' flag inside its output dictionary
     - name: Fail if dataset already exists
       ansible.builtin.fail:
         msg: "The dataset {{ clean_dsname }} already exists on the system."
-      when: ds_info.data_sets | length > 0
+      when: ds_stat_result.stat.exists
 
     - name: Allocate the SEQ or PDS dataset
       ibm.ibm_zos_core.zos_data_set:
         name: "{{ clean_dsname }}"
         type: "{{ clean_dsorg }}"
         state: present
-        
-        # Standard default space allocation properties
         space_type: TRK
         space_primary: 10
         space_secondary: 2
-        
-        # Standard default record metrics for sample text/COBOL code
         record_format: FB
         record_length: 80
-        
-        # Required parameter if the user selected a PDS library architecture
         directory_blocks: "{{ 5 if clean_dsorg == 'PDS' else omit }}"
-      register: allocation_result
+
+    # FOLLOW UP TASK 1: Populate Sequential Dataset (SEQ)
+    - name: Populate records into Sequential dataset
+      ibm.ibm_zos_core.zos_line:
+        src: "{{ clean_dsname }}"
+        line: "{{ item }}"
+        state: present
+      loop: "{{ sample_content }}"
+      when: clean_dsorg == 'SEQ'
+
+    # UPDATED FOLLOW UP TASK 2: Dynamic Member Population
+    - name: Create and populate member inside PDS dataset
+      ibm.ibm_zos_core.zos_line:
+        # Falls back to 'MAIN' if member_name is left blank or undefined in AWX
+        src: "{{ clean_dsname }}({{ member_name | default('MAIN') | trim | upper })"
+        line: "{{ item }}"
+        state: present
+      loop: "{{ sample_content }}"
+      when: clean_dsorg == 'PDS'
 
     - name: Output allocation success confirmation
       ansible.builtin.debug:
-        msg: "Successfully created {{ clean_dsorg }} dataset: {{ clean_dsname }} with FB 80 attributes."
-      when: allocation_result.changed
+        msg: "Successfully created and populated {{ clean_dsorg }} dataset: {{ clean_dsname }}"
