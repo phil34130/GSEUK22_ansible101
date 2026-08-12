@@ -1,0 +1,53 @@
+---
+- name: Allocate Sample z/OS Dataset
+  hosts: zxplore
+  gather_facts: false
+  environment: "{{ environment_vars }}"
+  collections:
+    - ibm.ibm_zos_core
+  vars:
+    # Sanitize survey inputs by removing spaces and forcing uppercase
+    clean_dsname: "{{ dsname | trim | upper }}"
+    clean_dsorg: "{{ dsorg | trim | upper }}"
+
+  tasks:
+    - name: Validate that dataset name follows z/OS standards
+      ansible.builtin.fail:
+        msg: "Invalid dataset name syntax. Segments must be 1-8 chars and total length <= 44."
+      when: >
+        not (clean_dsname | match('^[A-Z@#$][A-Z0-9@#$-]{0,7}(\\.[A-Z@#$][A-Z0-9@#$-]{0,7})*$')) 
+        or (clean_dsname | length > 44)
+
+    - name: Check if dataset already exists
+      ibm.ibm_zos_core.zos_data_set_info:
+        name: "{{ clean_dsname }}"
+      register: ds_info
+
+    - name: Fail if dataset already exists
+      ansible.builtin.fail:
+        msg: "The dataset {{ clean_dsname }} already exists on the system."
+      when: ds_info.data_sets | length > 0
+
+    - name: Allocate the SEQ or PDS dataset
+      ibm.ibm_zos_core.zos_data_set:
+        name: "{{ clean_dsname }}"
+        type: "{{ clean_dsorg }}"
+        state: present
+        
+        # Standard default space allocation properties
+        space_type: TRK
+        space_primary: 10
+        space_secondary: 2
+        
+        # Standard default record metrics for sample text/COBOL code
+        record_format: FB
+        record_length: 80
+        
+        # Required parameter if the user selected a PDS library architecture
+        directory_blocks: "{{ 5 if clean_dsorg == 'PDS' else omit }}"
+      register: allocation_result
+
+    - name: Output allocation success confirmation
+      ansible.builtin.debug:
+        msg: "Successfully created {{ clean_dsorg }} dataset: {{ clean_dsname }} with FB 80 attributes."
+      when: allocation_result.changed
