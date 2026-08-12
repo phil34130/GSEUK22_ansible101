@@ -41,7 +41,7 @@
     - name: Allocate the SEQ or PDS dataset
       ibm.ibm_zos_core.zos_data_set:
         name: "{{ clean_dsname }}"
-        type: "{{ clean_dsorg }}"
+        type: "{{ clean_dsorg | lower }}"  # FIXED: Added '| lower' filter here
         state: present
         space_type: TRK
         space_primary: 10
