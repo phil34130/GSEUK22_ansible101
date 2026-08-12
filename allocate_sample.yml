@@ -49,20 +49,19 @@
         record_length: 80
         directory_blocks: "{{ 5 if clean_dsorg == 'PDS' else omit }}"
 
-    # FOLLOW UP TASK 1: Populate Sequential Dataset (SEQ)
+   # FIXED: Using correct module 'zos_lineinfile' for Sequential datasets
     - name: Populate records into Sequential dataset
-      ibm.ibm_zos_core.zos_line:
+      ibm.ibm_zos_core.zos_lineinfile:
         src: "{{ clean_dsname }}"
         line: "{{ item }}"
         state: present
       loop: "{{ sample_content }}"
       when: clean_dsorg == 'SEQ'
 
-    # UPDATED FOLLOW UP TASK 2: Dynamic Member Population
+    # FIXED: Using correct module 'zos_lineinfile' with dynamic member string
     - name: Create and populate member inside PDS dataset
-      ibm.ibm_zos_core.zos_line:
-        # Falls back to 'MAIN' if member_name is left blank or undefined in AWX
-        src: "{{ clean_dsname }}({{ member_name | default('MAIN') | trim | upper })"
+      ibm.ibm_zos_core.zos_lineinfile:
+        src: "{{ clean_dsname }}({{ clean_member }})"
         line: "{{ item }}"
         state: present
       loop: "{{ sample_content }}"
