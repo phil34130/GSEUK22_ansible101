@@ -79,7 +79,7 @@
           - "LISTDS '{{ clean_dsname }}'"
       register: tso_cmd_result
 
-     - name: Display TSO LISTDS confirmation from mainframe
+    - name: Display TSO LISTDS confirmation from mainframe
       ansible.builtin.debug:
         # FIXED: Accesses the first command result [0] and extracts its 'content' lines
         msg: "{{ tso_cmd_result.output[0].content }}"
