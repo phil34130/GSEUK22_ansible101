@@ -72,7 +72,7 @@
       ibm.ibm_zos_core.zos_copy:
         content: "{{ sample_content }}"
         dest: "{{ clean_dsname }}"
-        force: true                         # FIXED: Forces rewrite if space is reallocated
+        replace: true                         # FIXED: Forces rewrite if space is reallocated
       when: clean_dsorg == 'SEQ'
 
     - name: Create and populate member inside PDS dataset
