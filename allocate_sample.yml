@@ -79,7 +79,7 @@
       ibm.ibm_zos_core.zos_copy:
         content: "{{ sample_content }}"
         dest: "{{ clean_dsname }}({{ clean_member }})"
-        force: true                         # FIXED: Explicitly overwrites existing member safety blocks
+        replace: true                         # FIXED: Explicitly overwrites existing member safety blocks
       when: clean_dsorg == 'PDS'
 
     - name: Output allocation success confirmation
