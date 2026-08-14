@@ -6,34 +6,37 @@
   collections:
     - ibm.ibm_zos_core
   vars:
-    clean_dsname: "{{ dsname | trim | upper }}"
+    clean_dsname: "{{ dsname | default('') | trim | upper }}"
+    clean_dsorg: "{{ dsorg | default('') | trim | upper }}"
     clean_member: "{{ member_name | default('MAIN') | trim | upper }}"
-    clean_dsorg: "{{ dsorg | trim | upper }}"
-    # Define sample content lines to insert
-    sample_content:
-      - "/* SAMPLE FILE CREATED BY ANSIBLE AWX */"
-      - "IDENTIFICATION DIVISION."
-      - "PROGRAM-ID. HELLO."
-      - "PROCEDURE DIVISION."
-      - "    DISPLAY 'HELLO MAINFRAME'."
-      - "    GOBACK."
+    
+    # FIXED: Replaced the loop list with a single, multi-line string block
+    sample_content: |
+      /* SAMPLE FILE CREATED BY ANSIBLE AWX */
+      IDENTIFICATION DIVISION.
+      PROGRAM-ID. HELLO.
+      PROCEDURE DIVISION.
+          DISPLAY 'HELLO MAINFRAME'.
+          GOBACK.
 
   tasks:
+    - name: Ensure survey variables are provided
+      ansible.builtin.fail:
+        msg: "Missing required inputs. Please ensure the AWX Survey is populated and enabled."
+      when: dsname is undefined or dsorg is undefined
+
     - name: Validate dataset name syntax
       ansible.builtin.fail:
         msg: "Invalid dataset name syntax. Segments must be 1-8 chars and total length <= 44."
-      # FIXED: Changed from '| match' to '| regex_search'
       when: >
         not (clean_dsname | regex_search('^[A-Z@#$][A-Z0-9@#$-]{0,7}(\\.[A-Z@#$][A-Z0-9@#$-]{0,7})*$')) 
-        or (clean_dsname | length > 44)
+        or (clean_dsname | length > 44) or (clean_dsname | length == 0)
 
-    # FIXED: Using zos_stat to check if the dataset exists
     - name: Check if dataset already exists
       ibm.ibm_zos_core.zos_stat:
         name: "{{ clean_dsname }}"
       register: ds_stat_result
 
-    # FIXED: zos_stat returns an 'exists' flag inside its output dictionary
     - name: Fail if dataset already exists
       ansible.builtin.fail:
         msg: "The dataset {{ clean_dsname }} already exists on the system."
@@ -42,38 +45,33 @@
     - name: Allocate the SEQ or PDS dataset
       ibm.ibm_zos_core.zos_data_set:
         name: "{{ clean_dsname }}"
-        type: "{{ clean_dsorg | lower }}"  # FIXED: Added '| lower' filter here
+        type: "{{ clean_dsorg | lower }}"
         state: present
-        space_type: "{{ 'trk' if clean_dsorg in ['SEQ', 'PDS'] else 'trk' }}" # FIXED: Must be lowercase 'trk' or 'cyl'
+        space_type: trk
         space_primary: 10
         space_secondary: 2
-        record_format: fb               # FIXED: Changed from 'FB' to lowercase 'fb'
+        record_format: fb
         record_length: 80
         directory_blocks: "{{ 5 if clean_dsorg == 'PDS' else omit }}"
 
-       # FIX 3: Corrected the comment spacing indentation here
-    # FIXED: Using correct module 'zos_lineinfile' for Sequential datasets
-    - name: Populate records into Sequential dataset
-      ibm.ibm_zos_core.zos_lineinfile:
-        src: "{{ clean_dsname }}"
-        line: "{{ item }}"
-        state: present
-      loop: "{{ sample_content }}"
+    # FIXED: Using zos_copy with content string to write everything in ONE operation (No looping)
+    - name: Populate Sequential dataset content
+      ibm.ibm_zos_core.zos_copy:
+        content: "{{ sample_content }}"
+        dest: "{{ clean_dsname }}"
       when: clean_dsorg == 'SEQ'
 
+    # FIXED: Using zos_copy to directly populate a PDS member seamlessly
     - name: Create and populate member inside PDS dataset
-      ibm.ibm_zos_core.zos_lineinfile:
-        src: "{{ clean_dsname }}({{ clean_member }})"
-        line: "{{ item }}"
-        state: present
-      loop: "{{ sample_content }}"
+      ibm.ibm_zos_core.zos_copy:
+        content: "{{ sample_content }}"
+        dest: "{{ clean_dsname }}({{ clean_member }})"
       when: clean_dsorg == 'PDS'
 
     - name: Output allocation success confirmation
       ansible.builtin.debug:
         msg: "Successfully created and populated {{ clean_dsorg }} dataset: {{ clean_dsname }}"
-    # FIXED: Restructured dd_output and dd_input to isolate dd_name inside them
-    # FIXED: Replaced zos_mvs_raw with a simplified TSO command module
+
     - name: Verify dataset attributes via zos_tso_command
       ibm.ibm_zos_core.zos_tso_command:
         commands:
@@ -82,5 +80,4 @@
 
     - name: Display TSO LISTDS confirmation from mainframe
       ansible.builtin.debug:
-        # FIXED: Accesses the first command result [0] and extracts its 'content' lines
-        msg: "{{ tso_cmd_result.output[0].content }}"
+        msg: "{{ tso_cmd_result.output[0].content | default(tso_cmd_result.output[0].command_response) | default(tso_cmd_result.output) }}"
