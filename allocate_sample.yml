@@ -33,13 +33,11 @@
         not (clean_dsname | regex_search('^[A-Z@#$][A-Z0-9@#$-]{0,7}(\\.[A-Z@#$][A-Z0-9@#$-]{0,7})*$')) 
         or (clean_dsname | length > 44) or (clean_dsname | length == 0)
 
-    # FIXED: Bulletproof existence check that works for both PDS libraries and SEQ files
     - name: Check if dataset exists on system catalog
       ibm.ibm_zos_core.zos_stat:
         name: "{{ clean_dsname }}"
       register: ds_check
 
-    # FIXED: Added the missing closing curly brace '}' to clean_member
     - name: Check if PDS member already exists
       ibm.ibm_zos_core.zos_stat:
         name: "{{ clean_dsname }}({{ clean_member }})"
@@ -48,15 +46,7 @@
         - ds_check.stat.exists
         - clean_dsorg == 'PDS'
 
-    # NEW: Fail the job safely if the member exists but the user selected NO for overwrite
-    - name: Fail if PDS member exists and overwrite is NO
-      ansible.builtin.fail:
-        msg: "The member '{{ clean_member }}' already exists inside {{ clean_dsname }}! Run again and change your overwrite choice to YES."
-      when:
-        - clean_dsorg == 'PDS'
-        - member_check.stat.exists | default(false)
-        - not should_overwrite
-    # FIXED: Drops the outer dataset cleanly if it exists AND you said YES
+    # CONDITIONAL STEP A: Delete the dataset ONLY if it is a SEQ file OR if you explicitly want to wipe the whole PDS
     - name: Delete existing dataset structure if overwrite is YES
       ibm.ibm_zos_core.zos_data_set:
         name: "{{ clean_dsname }}"
@@ -65,14 +55,16 @@
         - ds_check.stat.exists
         - should_overwrite
 
-    # FIXED: Safely halts the run if it exists and you said NO
-    - name: Fail if dataset exists and overwrite is NO
+    # CONDITIONAL STEP B: Fail ONLY if a Sequential dataset exists OR if the specific PDS member already exists
+    - name: Fail if resource conflict exists and overwrite is NO
       ansible.builtin.fail:
-        msg: "The dataset {{ clean_dsname }} already exists! Run again and change your choice to YES."
-      when: 
+        msg: "The requested resource (Dataset or specific Member) already exists! Change overwrite to YES to replace it."
+      when:
         - ds_check.stat.exists
         - not should_overwrite
+        - (clean_dsorg == 'SEQ') or (clean_dsorg == 'PDS' and member_check.stat.exists | default(false))
 
+    # FIXED: Only allocate if the dataset does NOT exist yet. If a PDS already exists, this skips safely.
     - name: Allocate the SEQ or PDS dataset
       ibm.ibm_zos_core.zos_data_set:
         name: "{{ clean_dsname }}"
@@ -84,19 +76,21 @@
         record_format: fb
         record_length: 80
         directory_blocks: "{{ 5 if clean_dsorg == 'PDS' else omit }}"
+      when: not ds_check.stat.exists or should_overwrite
 
     - name: Populate Sequential dataset content
       ibm.ibm_zos_core.zos_copy:
         content: "{{ sample_content }}"
         dest: "{{ clean_dsname }}"
-        replace: true                         # FIXED: Forces rewrite if space is reallocated
+        force: true
       when: clean_dsorg == 'SEQ'
 
+    # FIXED: This will now run perfectly if the PDS exists but the member is brand new!
     - name: Create and populate member inside PDS dataset
       ibm.ibm_zos_core.zos_copy:
         content: "{{ sample_content }}"
         dest: "{{ clean_dsname }}({{ clean_member }})"
-        replace: true                         # FIXED: Explicitly overwrites existing member safety blocks
+        force: true
       when: clean_dsorg == 'PDS'
 
     - name: Output allocation success confirmation
@@ -111,4 +105,4 @@
 
     - name: Display TSO LISTDS confirmation from mainframe
       ansible.builtin.debug:
-        msg: "{{ tso_cmd_result.output[0].content | default(tso_cmd_result.output[0].command_response) | default(tso_cmd_result.output) }}"
+        msg: "{{ tso_cmd_result.output.content | default(tso_cmd_result.output.command_response) | default(tso_cmd_result.output) }}"
