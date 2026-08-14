@@ -7,6 +7,7 @@
     - ibm.ibm_zos_core
   vars:
     clean_dsname: "{{ dsname | trim | upper }}"
+    clean_member: "{{ member_name | default('MAIN') | trim | upper }}"
     clean_dsorg: "{{ dsorg | trim | upper }}"
     # Define sample content lines to insert
     sample_content:
@@ -50,7 +51,8 @@
         record_length: 80
         directory_blocks: "{{ 5 if clean_dsorg == 'PDS' else omit }}"
 
-   # FIXED: Using correct module 'zos_lineinfile' for Sequential datasets
+       # FIX 3: Corrected the comment spacing indentation here
+    # FIXED: Using correct module 'zos_lineinfile' for Sequential datasets
     - name: Populate records into Sequential dataset
       ibm.ibm_zos_core.zos_lineinfile:
         src: "{{ clean_dsname }}"
@@ -59,7 +61,6 @@
       loop: "{{ sample_content }}"
       when: clean_dsorg == 'SEQ'
 
-    # FIXED: Using correct module 'zos_lineinfile' with dynamic member string
     - name: Create and populate member inside PDS dataset
       ibm.ibm_zos_core.zos_lineinfile:
         src: "{{ clean_dsname }}({{ clean_member }})"
