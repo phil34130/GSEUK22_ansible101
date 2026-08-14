@@ -1,5 +1,5 @@
 ---
-- name: Allocate Sample z/OS Dataset
+- name: Allocate and Populate Sample z/OS Dataset
   hosts: zxplore
   gather_facts: false
   environment: "{{ environment_vars }}"
@@ -9,9 +9,9 @@
     clean_dsname: "{{ dsname | default('') | trim | upper }}"
     clean_dsorg: "{{ dsorg | default('') | trim | upper }}"
     clean_member: "{{ member_name | default('MAIN') | trim | upper }}"
+    # Evaluates to true if user selects YES in the AWX dropdown menu
     should_overwrite: "{{ (overwrite_existing | default('NO') | trim | upper) == 'YES' }}"
     
-    # FIXED: Replaced the loop list with a single, multi-line string block
     sample_content: |
       /* SAMPLE FILE CREATED BY ANSIBLE AWX */
       IDENTIFICATION DIVISION.
@@ -33,22 +33,27 @@
         not (clean_dsname | regex_search('^[A-Z@#$][A-Z0-9@#$-]{0,7}(\\.[A-Z@#$][A-Z0-9@#$-]{0,7})*$')) 
         or (clean_dsname | length > 44) or (clean_dsname | length == 0)
 
-    # CONDITIONAL STEP A: Delete the dataset ONLY if it exists AND the user selected YES
-    - name: Delete existing dataset if overwrite is checked
+    # FIXED: Bulletproof existence check that works for both PDS libraries and SEQ files
+    - name: Check if dataset exists on system catalog
+      ibm.ibm_zos_core.zos_stat:
+        name: "{{ clean_dsname }}"
+      register: ds_check
+
+    # FIXED: Drops the outer dataset cleanly if it exists AND you said YES
+    - name: Delete existing dataset structure if overwrite is YES
       ibm.ibm_zos_core.zos_data_set:
         name: "{{ clean_dsname }}"
         state: absent
-        force: true
       when: 
-        - ds_stat_result.stat.exists | default(false)  # FIXED: Added fallback filter
+        - ds_check.stat.exists
         - should_overwrite
 
-    # CONDITIONAL STEP B: Fail the job ONLY if it exists AND the user selected NO
-    - name: Fail if dataset exists and overwrite is disabled
+    # FIXED: Safely halts the run if it exists and you said NO
+    - name: Fail if dataset exists and overwrite is NO
       ansible.builtin.fail:
-        msg: "The dataset {{ clean_dsname }} already exists! Run this template again and select 'YES' to overwrite it."
+        msg: "The dataset {{ clean_dsname }} already exists! Run again and change your choice to YES."
       when: 
-        - ds_stat_result.stat.exists | default(false)  # FIXED: Added fallback filter
+        - ds_check.stat.exists
         - not should_overwrite
 
     - name: Allocate the SEQ or PDS dataset
@@ -63,18 +68,18 @@
         record_length: 80
         directory_blocks: "{{ 5 if clean_dsorg == 'PDS' else omit }}"
 
-    # FIXED: Using zos_copy with content string to write everything in ONE operation (No looping)
     - name: Populate Sequential dataset content
       ibm.ibm_zos_core.zos_copy:
         content: "{{ sample_content }}"
         dest: "{{ clean_dsname }}"
+        force: true                         # FIXED: Forces rewrite if space is reallocated
       when: clean_dsorg == 'SEQ'
 
-    # FIXED: Using zos_copy to directly populate a PDS member seamlessly
     - name: Create and populate member inside PDS dataset
       ibm.ibm_zos_core.zos_copy:
         content: "{{ sample_content }}"
         dest: "{{ clean_dsname }}({{ clean_member }})"
+        force: true                         # FIXED: Explicitly overwrites existing member safety blocks
       when: clean_dsorg == 'PDS'
 
     - name: Output allocation success confirmation
