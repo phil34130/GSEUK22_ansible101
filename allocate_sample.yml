@@ -39,6 +39,23 @@
         name: "{{ clean_dsname }}"
       register: ds_check
 
+    # NEW: Check if the specific member exists inside the PDS if PDS is selected
+    - name: Check if PDS member already exists
+      ibm.ibm_zos_core.zos_stat:
+        name: "{{ clean_dsname }}({{ clean_member })"
+      register: member_check
+      when: 
+        - ds_check.stat.exists
+        - clean_dsorg == 'PDS'
+
+    # NEW: Fail the job safely if the member exists but the user selected NO for overwrite
+    - name: Fail if PDS member exists and overwrite is NO
+      ansible.builtin.fail:
+        msg: "The member '{{ clean_member }}' already exists inside {{ clean_dsname }}! Run again and change your overwrite choice to YES."
+      when:
+        - clean_dsorg == 'PDS'
+        - member_check.stat.exists | default(false)
+        - not should_overwrite
     # FIXED: Drops the outer dataset cleanly if it exists AND you said YES
     - name: Delete existing dataset structure if overwrite is YES
       ibm.ibm_zos_core.zos_data_set:
