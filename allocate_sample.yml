@@ -9,6 +9,7 @@
     clean_dsname: "{{ dsname | default('') | trim | upper }}"
     clean_dsorg: "{{ dsorg | default('') | trim | upper }}"
     clean_member: "{{ member_name | default('MAIN') | trim | upper }}"
+    should_overwrite: "{{ (overwrite_existing | default('NO') | trim | upper) == 'YES' }}"
     
     # FIXED: Replaced the loop list with a single, multi-line string block
     sample_content: |
@@ -32,15 +33,22 @@
         not (clean_dsname | regex_search('^[A-Z@#$][A-Z0-9@#$-]{0,7}(\\.[A-Z@#$][A-Z0-9@#$-]{0,7})*$')) 
         or (clean_dsname | length > 44) or (clean_dsname | length == 0)
 
-    - name: Check if dataset already exists
-      ibm.ibm_zos_core.zos_stat:
+    # CONDITIONAL STEP A: Delete the dataset ONLY if it exists AND the user checked the box
+    - name: Delete existing dataset if overwrite is checked
+      ibm.ibm_zos_core.zos_data_set:
         name: "{{ clean_dsname }}"
-      register: ds_stat_result
+        state: absent
+      when: 
+        - ds_stat_result.stat.exists
+        - should_overwrite
 
-    - name: Fail if dataset already exists
+    # CONDITIONAL STEP B: Fail the job ONLY if it exists AND the user did NOT check the box
+    - name: Fail if dataset exists and overwrite is disabled
       ansible.builtin.fail:
-        msg: "The dataset {{ clean_dsname }} already exists on the system."
-      when: ds_stat_result.stat.exists
+        msg: "The dataset {{ clean_dsname }} already exists! Run this template again and check 'Overwrite/Delete it?' to clear it."
+      when: 
+        - ds_stat_result.stat.exists
+        - not should_overwrite
 
     - name: Allocate the SEQ or PDS dataset
       ibm.ibm_zos_core.zos_data_set:
