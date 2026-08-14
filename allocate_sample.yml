@@ -39,10 +39,10 @@
         name: "{{ clean_dsname }}"
       register: ds_check
 
-    # NEW: Check if the specific member exists inside the PDS if PDS is selected
+    # FIXED: Added the missing closing curly brace '}' to clean_member
     - name: Check if PDS member already exists
       ibm.ibm_zos_core.zos_stat:
-        name: "{{ clean_dsname }}({{ clean_member })"
+        name: "{{ clean_dsname }}({{ clean_member }})"
       register: member_check
       when: 
         - ds_check.stat.exists
